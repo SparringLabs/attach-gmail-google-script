@@ -3,7 +3,7 @@
   <head>
     <base target="_top">
     <meta charset="utf-8">
-    <title>SPARRING Attach GMAIL v0.3 - Configuración</title>
+    <title>SPARRING Attach GMAIL v0.4 - Configuración</title>
     
     <!-- Estilos CSS para una interfaz moderna -->
     <style>
@@ -658,6 +658,146 @@
           width: 100%;
         }
       }
+      
+      /* Estilos para sección de automatización */
+      .time-picker {
+        display: flex;
+        align-items: center;
+      }
+      
+      .time-select {
+        width: 80px;
+      }
+      
+      .time-separator {
+        margin: 0 5px;
+        font-weight: 500;
+      }
+      
+      .input-with-unit {
+        display: flex;
+        align-items: center;
+      }
+      
+      .input-with-unit input {
+        width: 80px;
+        margin-right: 10px;
+      }
+      
+      .input-with-unit .unit {
+        color: #555;
+      }
+      
+      .info-box {
+        display: flex;
+        background-color: #e8f0fe;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 15px;
+        border-left: 3px solid #1a73e8;
+      }
+      
+      .info-icon {
+        margin-right: 10px;
+        color: #1a73e8;
+      }
+      
+      /* Estilos para las tarjetas de frecuencia */
+      .freq-label {
+        display: block;
+        margin-bottom: 12px;
+        font-weight: 500;
+      }
+      
+      .frequency-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+      
+      .frequency-card {
+        position: relative;
+        width: calc(50% - 8px);
+        min-width: 200px;
+        max-width: 300px;
+      }
+      
+      .freq-radio {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      
+      .freq-card-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 15px;
+        background-color: #f8f9fa;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .freq-radio:checked + .freq-card-label {
+        border-color: #1a73e8;
+        background-color: #e8f0fe;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      
+      .freq-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+        color: #5f6368;
+      }
+      
+      .freq-radio:checked + .freq-card-label .freq-icon {
+        color: #1a73e8;
+      }
+      
+      .freq-title {
+        font-weight: 500;
+        font-size: 16px;
+        margin-bottom: 5px;
+      }
+      
+      .freq-desc {
+        font-size: 13px;
+        color: #5f6368;
+        text-align: center;
+      }
+      
+      /* Estilos responsivos para tarjetas */
+      @media (max-width: 768px) {
+        .frequency-card {
+          width: 100%;
+          max-width: none;
+        }
+      }
+      
+      .status-message {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 6px;
+        display: none;
+      }
+      
+      .status-message.success {
+        background-color: #e6f4ea;
+        color: #137333;
+        border-left: 3px solid #34a853;
+        display: block;
+      }
+      
+      .status-message.error {
+        background-color: #fce8e6;
+        color: #c5221f;
+        border-left: 3px solid #ea4335;
+        display: block;
+      }
     </style>
     <!-- Material Icons - Google Font Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -867,6 +1007,298 @@
       </div>
       
       <div class="section">
+        <div class="section-title">Automatización</div>
+        <div class="section-content">
+          <div class="form-group checkbox-group">
+            <label class="checkbox-container">
+              <input type="checkbox" id="automatizacion-activado" name="AUTOMATIZACION.ACTIVADO">
+              <span class="checkmark"></span>
+              <span>Activar ejecución automática programada</span>
+            </label>
+            <p class="help-text">Active esta opción para configurar la ejecución automática del script según la frecuencia deseada.</p>
+          </div>
+          
+          <div class="automatizacion-config" id="automatizacion-config" style="display: none;">
+            <div class="form-group">
+              <label class="freq-label">Frecuencia de ejecución:</label>
+              
+              <div class="frequency-cards">
+                <div class="frequency-card" data-value="horaria">
+                  <input type="radio" name="AUTOMATIZACION.FRECUENCIA" id="freq-horaria" value="horaria" class="freq-radio">
+                  <label for="freq-horaria" class="freq-card-label">
+                    <i class="material-icons freq-icon">schedule</i>
+                    <span class="freq-title">Horaria</span>
+                    <span class="freq-desc">Ejecutar cada X horas</span>
+                  </label>
+                </div>
+                
+                <div class="frequency-card" data-value="diaria">
+                  <input type="radio" name="AUTOMATIZACION.FRECUENCIA" id="freq-diaria" value="diaria" class="freq-radio" checked>
+                  <label for="freq-diaria" class="freq-card-label">
+                    <i class="material-icons freq-icon">today</i>
+                    <span class="freq-title">Diaria</span>
+                    <span class="freq-desc">Todos los días a una hora fija</span>
+                  </label>
+                </div>
+                
+                <div class="frequency-card" data-value="semanal">
+                  <input type="radio" name="AUTOMATIZACION.FRECUENCIA" id="freq-semanal" value="semanal" class="freq-radio">
+                  <label for="freq-semanal" class="freq-card-label">
+                    <i class="material-icons freq-icon">view_week</i>
+                    <span class="freq-title">Semanal</span>
+                    <span class="freq-desc">Un día concreto cada semana</span>
+                  </label>
+                </div>
+                
+                <div class="frequency-card" data-value="mensual">
+                  <input type="radio" name="AUTOMATIZACION.FRECUENCIA" id="freq-mensual" value="mensual" class="freq-radio">
+                  <label for="freq-mensual" class="freq-card-label">
+                    <i class="material-icons freq-icon">calendar_today</i>
+                    <span class="freq-title">Mensual</span>
+                    <span class="freq-desc">Un día específico cada mes</span>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Campo oculto para mantener compatibilidad con el código existente -->
+              <select id="frecuencia-automatizacion" name="AUTOMATIZACION.FRECUENCIA" class="form-control" style="display: none;">
+                <option value="horaria">Horaria</option>
+                <option value="diaria" selected>Diaria</option>
+                <option value="semanal">Semanal</option>
+                <option value="mensual">Mensual</option>
+              </select>
+            </div>
+            
+            <!-- Configuración Horaria -->
+            <div class="frecuencia-config" id="config-horaria">
+              <div class="form-group">
+                <label for="intervalo-horas">Ejecutar cada:</label>
+                <div class="input-with-unit">
+                  <input type="number" id="intervalo-horas" name="AUTOMATIZACION.INTERVALO_HORAS" class="form-control" min="1" max="24" value="1">
+                  <span class="unit">hora(s)</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Configuración Diaria -->
+            <div class="frecuencia-config" id="config-diaria">
+              <div class="form-group">
+                <label for="hora-ejecucion">Hora de ejecución:</label>
+                <div class="time-picker">
+                  <select id="hora-ejecucion" name="AUTOMATIZACION.HORA_EJECUCION" class="form-control time-select">
+                    <option value="0">00</option>
+                    <option value="1">01</option>
+                    <option value="2">02</option>
+                    <option value="3">03</option>
+                    <option value="4">04</option>
+                    <option value="5">05</option>
+                    <option value="6">06</option>
+                    <option value="7">07</option>
+                    <option value="8" selected>08</option>
+                    <option value="9">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                  </select>
+                  <span class="time-separator">:</span>
+                  <select id="minuto-ejecucion" name="AUTOMATIZACION.MINUTO_EJECUCION" class="form-control time-select">
+                    <option value="0" selected>00</option>
+                    <option value="5">05</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="35">35</option>
+                    <option value="40">40</option>
+                    <option value="45">45</option>
+                    <option value="50">50</option>
+                    <option value="55">55</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Configuración Semanal -->
+            <div class="frecuencia-config" id="config-semanal">
+              <div class="form-group">
+                <label for="dia-semana">Día de la semana:</label>
+                <select id="dia-semana" name="AUTOMATIZACION.DIA_SEMANA" class="form-control">
+                  <option value="1">Lunes</option>
+                  <option value="2">Martes</option>
+                  <option value="3">Miércoles</option>
+                  <option value="4">Jueves</option>
+                  <option value="5">Viernes</option>
+                  <option value="6">Sábado</option>
+                  <option value="7">Domingo</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="hora-ejecucion-semanal">Hora de ejecución:</label>
+                <div class="time-picker">
+                  <select id="hora-ejecucion-semanal" name="AUTOMATIZACION.HORA_EJECUCION" class="form-control time-select">
+                    <option value="0">00</option>
+                    <option value="1">01</option>
+                    <option value="2">02</option>
+                    <option value="3">03</option>
+                    <option value="4">04</option>
+                    <option value="5">05</option>
+                    <option value="6">06</option>
+                    <option value="7">07</option>
+                    <option value="8" selected>08</option>
+                    <option value="9">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                  </select>
+                  <span class="time-separator">:</span>
+                  <select id="minuto-ejecucion-semanal" name="AUTOMATIZACION.MINUTO_EJECUCION" class="form-control time-select">
+                    <option value="0" selected>00</option>
+                    <option value="5">05</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="35">35</option>
+                    <option value="40">40</option>
+                    <option value="45">45</option>
+                    <option value="50">50</option>
+                    <option value="55">55</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Configuración Mensual -->
+            <div class="frecuencia-config" id="config-mensual">
+              <div class="form-group">
+                <label for="dia-mes">Día del mes:</label>
+                <select id="dia-mes" name="AUTOMATIZACION.DIA_MES" class="form-control">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                  <option value="22">22</option>
+                  <option value="23">23</option>
+                  <option value="24">24</option>
+                  <option value="25">25</option>
+                  <option value="26">26</option>
+                  <option value="27">27</option>
+                  <option value="28">28</option>
+                  <option value="29">29</option>
+                  <option value="30">30</option>
+                  <option value="31">31</option>
+                </select>
+                <p class="help-text">Si selecciona un día que no existe en un mes específico (como 31 de febrero), la ejecución se omitirá ese mes.</p>
+              </div>
+              
+              <div class="form-group">
+                <label for="hora-ejecucion-mensual">Hora de ejecución:</label>
+                <div class="time-picker">
+                  <select id="hora-ejecucion-mensual" name="AUTOMATIZACION.HORA_EJECUCION" class="form-control time-select">
+                    <option value="0">00</option>
+                    <option value="1">01</option>
+                    <option value="2">02</option>
+                    <option value="3">03</option>
+                    <option value="4">04</option>
+                    <option value="5">05</option>
+                    <option value="6">06</option>
+                    <option value="7">07</option>
+                    <option value="8" selected>08</option>
+                    <option value="9">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                  </select>
+                  <span class="time-separator">:</span>
+                  <select id="minuto-ejecucion-mensual" name="AUTOMATIZACION.MINUTO_EJECUCION" class="form-control time-select">
+                    <option value="0" selected>00</option>
+                    <option value="5">05</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="35">35</option>
+                    <option value="40">40</option>
+                    <option value="45">45</option>
+                    <option value="50">50</option>
+                    <option value="55">55</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div id="automatizacion-info" class="info-box">
+              <div class="info-icon"><i class="material-icons">info</i></div>
+              <div class="info-content">
+                <strong>¿Cómo funciona?</strong> Al guardar esta configuración, se creará automáticamente un disparador (trigger) en Google Apps Script que ejecutará la sincronización según la programación establecida. El script se ejecutará incluso cuando no tengas abierto el navegador.
+              </div>
+            </div>
+            
+            <div id="automatizacion-status" class="form-group" style="margin-top: 20px;">
+              <button type="button" id="btn-configurar-trigger" class="btn btn-primary">
+                <i class="material-icons">schedule</i> Guardar y configurar automatización
+              </button>
+              <div id="status-trigger" class="status-message"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
         <div class="section-title">Notificaciones</div>
         <div class="section-content">
         
@@ -916,7 +1348,7 @@
       
       <div class="tab-content active" id="info-content">
         <div class="info-panel">
-          <h3>Sobre SPARRING Attach GMAIL v0.3</h3>
+          <h3>Sobre SPARRING Attach GMAIL v0.4</h3>
           <p>Esta herramienta sincroniza automáticamente los adjuntos de Gmail a Google Drive, organizándolos en carpetas por dominio del remitente.</p>
           
           <h4>Características principales</h4>
@@ -1019,7 +1451,7 @@
       </div>
       
       <div class="footer">
-        <div class="logo"><span>SPARRING</span> Attach GMAIL v0.3</div>
+        <div class="logo"><span>SPARRING</span> Attach GMAIL v0.4</div>
         Desarrollado por <a href="https://sparring.dev" target="_blank">SPARRING.dev</a> - Optimizando procesos. Marzo de 2025<br>
         &copy; 2025 SPARRING.dev - Todos los derechos reservados
       </div>
@@ -1359,6 +1791,123 @@
         }
       }
       
+      // Función para mostrar/ocultar la sección de automatización
+      function toggleAutomatizacion() {
+        const activado = document.getElementById('automatizacion-activado').checked;
+        const configDiv = document.getElementById('automatizacion-config');
+        configDiv.style.display = activado ? 'block' : 'none';
+      }
+      
+      // Función para mostrar/ocultar las opciones según la frecuencia seleccionada
+      function toggleFrecuenciaConfig() {
+        // Obtener frecuencia del elemento oculto
+        const frecuencia = document.getElementById('frecuencia-automatizacion').value;
+        const configHoraria = document.getElementById('config-horaria');
+        const configDiaria = document.getElementById('config-diaria');
+        const configSemanal = document.getElementById('config-semanal');
+        const configMensual = document.getElementById('config-mensual');
+        
+        // Ocultar todas las configuraciones
+        configHoraria.style.display = 'none';
+        configDiaria.style.display = 'none';
+        configSemanal.style.display = 'none';
+        configMensual.style.display = 'none';
+        
+        // Mostrar la configuración correspondiente a la frecuencia seleccionada
+        switch (frecuencia) {
+          case 'horaria':
+            configHoraria.style.display = 'block';
+            break;
+          case 'diaria':
+            configDiaria.style.display = 'block';
+            break;
+          case 'semanal':
+            configSemanal.style.display = 'block';
+            break;
+          case 'mensual':
+            configMensual.style.display = 'block';
+            break;
+          case 'personalizada':
+            configHoraria.style.display = 'block';
+            break;
+        }
+        
+        // Actualizar visualemente qué tarjeta está seleccionada
+        document.querySelectorAll('.frequency-card').forEach(card => {
+          const cardValue = card.getAttribute('data-value');
+          const radioInput = document.getElementById('freq-' + cardValue);
+          if (cardValue === frecuencia) {
+            radioInput.checked = true;
+          }
+        });
+      }
+      
+      // Manejar clicks en las tarjetas de frecuencia
+      function handleFrequencyCardSelection(event) {
+        const selectedValue = event.currentTarget.getAttribute('data-value');
+        // Actualizar el select oculto para mantener compatibilidad
+        const selectElement = document.getElementById('frecuencia-automatizacion');
+        selectElement.value = selectedValue;
+        
+        // Mostrar la configuración correspondiente
+        toggleFrecuenciaConfig();
+      }
+      
+      // Función para configurar el disparador según las opciones seleccionadas
+      function configurarTrigger() {
+        showLoader();
+        const statusTrigger = document.getElementById('status-trigger');
+        statusTrigger.textContent = "Configurando disparador...";
+        statusTrigger.style.display = "block";
+        statusTrigger.className = "status-message";
+        
+        // Recopilar configuración de automatización
+        const config = {
+          ACTIVADO: document.getElementById('automatizacion-activado').checked,
+          FRECUENCIA: document.getElementById('frecuencia-automatizacion').value
+        };
+        
+        // Configuración específica según la frecuencia
+        switch (config.FRECUENCIA) {
+          case 'horaria':
+            config.INTERVALO_HORAS = parseInt(document.getElementById('intervalo-horas').value, 10) || 1;
+            break;
+          case 'diaria':
+            config.HORA_EJECUCION = parseInt(document.getElementById('hora-ejecucion').value, 10) || 8;
+            config.MINUTO_EJECUCION = parseInt(document.getElementById('minuto-ejecucion').value, 10) || 0;
+            break;
+          case 'semanal':
+            config.DIA_SEMANA = parseInt(document.getElementById('dia-semana').value, 10) || 1;
+            config.HORA_EJECUCION = parseInt(document.getElementById('hora-ejecucion-semanal').value, 10) || 8;
+            config.MINUTO_EJECUCION = parseInt(document.getElementById('minuto-ejecucion-semanal').value, 10) || 0;
+            break;
+          case 'mensual':
+            config.DIA_MES = parseInt(document.getElementById('dia-mes').value, 10) || 1;
+            config.HORA_EJECUCION = parseInt(document.getElementById('hora-ejecucion-mensual').value, 10) || 8;
+            config.MINUTO_EJECUCION = parseInt(document.getElementById('minuto-ejecucion-mensual').value, 10) || 0;
+            break;
+        }
+        
+        // Llamar a la función del servidor para configurar el disparador
+        google.script.run
+          .withSuccessHandler(function(result) {
+            hideLoader();
+            if (result.exito) {
+              statusTrigger.textContent = result.mensaje;
+              statusTrigger.className = "status-message success";
+            } else {
+              statusTrigger.textContent = result.mensaje;
+              statusTrigger.className = "status-message error";
+            }
+          })
+          .withFailureHandler(function(error) {
+            hideLoader();
+            statusTrigger.textContent = "Error: " + error.message;
+            statusTrigger.className = "status-message error";
+          })
+          .configureTrigger(config);
+      }
+      
       // Configurar eventos cuando se carga la estructura DOM
       document.addEventListener('DOMContentLoaded', function() {
         // Cargar la configuración al cargar la página
@@ -1397,6 +1946,39 @@
         // Configurar evento para mostrar/ocultar opciones de notificaciones
         document.getElementById('enviarNotificaciones').addEventListener('change', toggleDetalleNotificaciones);
         
+        // Eventos para sección de automatización
+        document.getElementById('automatizacion-activado').addEventListener('change', toggleAutomatizacion);
+        
+        // Manejar el select oculto de frecuencia (para compatibilidad)
+        document.getElementById('frecuencia-automatizacion').addEventListener('change', toggleFrecuenciaConfig);
+        
+        // Manejar clicks en las tarjetas de frecuencia
+        document.querySelectorAll('.frequency-card').forEach(card => {
+          card.addEventListener('click', function() {
+            const selectedValue = this.getAttribute('data-value');
+            const radioInput = document.getElementById('freq-' + selectedValue);
+            radioInput.checked = true;
+            
+            // Actualizar el select oculto
+            document.getElementById('frecuencia-automatizacion').value = selectedValue;
+            
+            // Actualizar la visualización
+            toggleFrecuenciaConfig();
+          });
+        });
+        
+        // Manejar cambios en los radios de frecuencia
+        document.querySelectorAll('.freq-radio').forEach(radio => {
+          radio.addEventListener('change', function() {
+            if (this.checked) {
+              document.getElementById('frecuencia-automatizacion').value = this.value;
+              toggleFrecuenciaConfig();
+            }
+          });
+        });
+        
+        document.getElementById('btn-configurar-trigger').addEventListener('click', configurarTrigger);
+        
         // Eventos para secciones colapsables
         document.querySelectorAll('.section-title').forEach(title => {
           title.addEventListener('click', function() {
@@ -1413,6 +1995,8 @@
         
         // Inicializar estados de interfaz
         toggleDetalleNotificaciones();
+        toggleAutomatizacion();
+        toggleFrecuenciaConfig();
       });
     </script>
   </body>

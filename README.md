@@ -1,6 +1,6 @@
 # SPARRING Attach GMAIL Google Script
 
-[![Version](https://img.shields.io/badge/version-0.3-blue.svg)](https://github.com/SparringLabs/attach-gmail-google-script)
+[![Version](https://img.shields.io/badge/version-0.4-blue.svg)](https://github.com/SparringLabs/attach-gmail-google-script)
 [![Google Apps Script](https://img.shields.io/badge/Google%20Apps%20Script-4285F4?style=flat&logo=google&logoColor=white)](https://developers.google.com/apps-script)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
 [![HTML](https://img.shields.io/badge/HTML-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/es/docs/Web/HTML)
@@ -9,7 +9,7 @@
 
 > Una herramienta de [SPARRING.dev](https://sparring.dev) para simplificar tu vida digital.
 
-![Interfaz de SPARRING Attach GMAIL](ui-marzo25.png)
+![Interfaz de SPARRING Attach GMAIL](resources/ui-marzo25.png)
 *Vista de la interfaz de configuración de SPARRING Attach GMAIL - Marzo 2025*
 
 ## ⚠️ Aviso Legal
@@ -140,18 +140,31 @@ Después de instalar el script, debes configurarlo según tus necesidades:
 
 ## 🔄 Automatización del script
 
-Para que el script se ejecute automáticamente y sincronice tus adjuntos de forma periódica:
+El script incluye una funcionalidad integrada de automatización que puedes configurar directamente desde la interfaz de usuario, sin necesidad de crear manualmente los activadores:
 
-1. Dentro del editor de Google Apps Script, haz clic en **Editar** > **Activadores actuales del proyecto**.
-2. Haz clic en **Añadir activador**.
-3. Configura el activador con los siguientes parámetros:
-   - Función a ejecutar: "syncAttachments"
-   - Evento de origen: "Basado en tiempo"
-   - Tipo de activador basado en tiempo: "Temporizador de horas"
-   - Intervalo de horas: "Cada hora" (o ajusta según tus necesidades)
-4. Haz clic en **Guardar**.
+1. En la sección **Automatización** de la interfaz, activa la casilla "Activar ejecución automática".
+2. Selecciona la frecuencia de ejecución deseada:
+   - **Horaria**: El script se ejecuta cada X horas (configurable).
+   - **Diaria**: El script se ejecuta todos los días a una hora específica.
+   - **Semanal**: El script se ejecuta un día concreto de la semana a una hora específica.
+   - **Mensual**: El script se ejecuta un día específico de cada mes a una hora determinada.
+   - **Personalizada**: Para configuraciones avanzadas de intervalos.
+3. Configura los parámetros específicos según la frecuencia seleccionada (hora, día, intervalo).
+4. Haz clic en el botón **Configurar Disparador** para aplicar la configuración.
+5. El sistema te informará si la configuración fue exitosa y cuándo está programada la próxima ejecución.
 
-El script ahora se ejecutará automáticamente según el intervalo configurado.
+### Ventajas de la automatización integrada
+
+- **Configuración visual**: No necesitas conocer los detalles técnicos de los activadores de Google Apps Script.
+- **Gestión simplificada**: Puedes cambiar la frecuencia o desactivar la automatización con un solo clic.
+- **Confirmación visual**: El sistema te informa claramente sobre el estado de los disparadores configurados.
+- **Automatización inteligente**: Para frecuencias mensuales, el script gestiona correctamente meses con diferentes números de días.
+
+> **Nota**: También puedes seguir configurando manualmente los activadores desde el editor de Google Apps Script si lo prefieres:
+> 1. Dentro del editor, haz clic en **Editar** > **Activadores actuales del proyecto**.
+> 2. Haz clic en **Añadir activador**.
+> 3. Configura el activador con los parámetros deseados.
+> 4. Haz clic en **Guardar**.
 
 ## 🎮 Uso diario
 

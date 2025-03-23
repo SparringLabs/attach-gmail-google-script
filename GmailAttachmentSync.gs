@@ -62,7 +62,29 @@ const CONFIG = {
   USAR_PATRONES_ASUNTO: false,
   
   // Lista de patrones a buscar en el asunto (ej: "ID000", "REF-", "CV")
-  PATRONES_ASUNTO: []
+  PATRONES_ASUNTO: [],
+  
+  // Configuración de automatización para ejecuciones programadas
+  AUTOMATIZACION: {
+    // Activar/desactivar la automatización
+    ACTIVADO: false,
+    
+    // Frecuencia de ejecución ('horaria', 'diaria', 'semanal', 'mensual', 'personalizada')
+    FRECUENCIA: 'diaria',
+    
+    // Configuración para frecuencia horaria
+    INTERVALO_HORAS: 1,
+    
+    // Configuración para frecuencia diaria, semanal y mensual
+    HORA_EJECUCION: 8,  // Hora del día (0-23)
+    MINUTO_EJECUCION: 0, // Minuto (0-59)
+    
+    // Configuración para frecuencia semanal
+    DIA_SEMANA: 1,      // Día de la semana (1-7, donde 1 es lunes)
+    
+    // Configuración para frecuencia mensual
+    DIA_MES: 1          // Día del mes (1-31)
+  }
 };
 
 /*=====================================================================
@@ -576,25 +598,147 @@ function obtenerNombreCarpetaPrincipal() {
 }
 
 /**
- * Configura un disparador para ejecutar la sincronización automáticamente cada hora.
+ * Configura un disparador para ejecutar la sincronización automáticamente según la configuración del usuario.
+ * Permite programar la ejecución con diferentes frecuencias (horaria, diaria, semanal, mensual) y a horas específicas.
  * Se debe ejecutar manualmente una vez para configurar el disparador.
+ * 
+ * @param {Object} [configuracion] - Configuración de automatización opcional (si no se proporciona, se usa CONFIG.AUTOMATIZACION)
+ * @return {Object} Resultado de la operación con mensaje y éxito
  */
-function configureTrigger() {
-  // Eliminar cualquier disparador existente para evitar duplicados
-  const triggers = ScriptApp.getProjectTriggers();
-  for (const trigger of triggers) {
-    if (trigger.getHandlerFunction() === 'syncAttachments') {
-      ScriptApp.deleteTrigger(trigger);
+function configureTrigger(configuracion) {
+  try {
+    // Usar configuración proporcionada o la guardada en CONFIG
+    const config = configuracion || CONFIG.AUTOMATIZACION;
+    
+    // Si no está activado, no hacer nada
+    if (!config.ACTIVADO) {
+      Logger.log('Automatización desactivada en la configuración. No se configuró ningún disparador.');
+      return {
+        exito: true,
+        mensaje: 'Automatización desactivada. No se configuró ningún disparador.'
+      };
     }
+    
+    // Eliminar cualquier disparador existente para evitar duplicados
+    const triggers = ScriptApp.getProjectTriggers();
+    for (const trigger of triggers) {
+      if (trigger.getHandlerFunction() === 'syncAttachments') {
+        ScriptApp.deleteTrigger(trigger);
+      }
+    }
+    
+    // Preparar el nuevo disparador
+    let trigger = ScriptApp.newTrigger('syncAttachments').timeBased();
+    
+    // Configurar según la frecuencia seleccionada
+    switch (config.FRECUENCIA) {
+      case 'horaria':
+        // Ejecutar cada X horas
+        trigger.everyHours(config.INTERVALO_HORAS || 1);
+        Logger.log(`Disparador configurado para ejecutar la sincronización cada ${config.INTERVALO_HORAS || 1} hora(s).`);
+        break;
+        
+      case 'diaria':
+        // Ejecutar todos los días a una hora específica
+        trigger.atHour(config.HORA_EJECUCION || 8)
+              .nearMinute(config.MINUTO_EJECUCION || 0)
+              .everyDays(1);
+        Logger.log(`Disparador configurado para ejecutar la sincronización diariamente a las ${config.HORA_EJECUCION || 8}:${config.MINUTO_EJECUCION || 0}.`);
+        break;
+        
+      case 'semanal':
+        // Ejecutar una vez a la semana en un día específico a una hora específica
+        trigger.onWeekDay(config.DIA_SEMANA || 1)
+              .atHour(config.HORA_EJECUCION || 8)
+              .nearMinute(config.MINUTO_EJECUCION || 0);
+        Logger.log(`Disparador configurado para ejecutar la sincronización semanalmente los días ${obtenerNombreDiaSemana(config.DIA_SEMANA || 1)} a las ${config.HORA_EJECUCION || 8}:${config.MINUTO_EJECUCION || 0}.`);
+        break;
+        
+      case 'mensual':
+        // Esta es la opción más compleja, ya que Google Apps Script no tiene un trigger mensual directo
+        // Usaremos disparadores diarios y verificaremos si es el día del mes correspondiente
+        trigger.atHour(config.HORA_EJECUCION || 8)
+              .nearMinute(config.MINUTO_EJECUCION || 0)
+              .everyDays(1);
+        
+        // Guardar el día del mes para verificarlo en la función mensualCheckTrigger
+        PropertiesService.getUserProperties().setProperty('DIA_MES_EJECUCION', String(config.DIA_MES || 1));
+        
+        // Creamos un segundo disparador que en realidad ejecutará mensualCheckTrigger
+        ScriptApp.newTrigger('mensualCheckTrigger')
+          .timeBased()
+          .atHour(config.HORA_EJECUCION || 8)
+          .nearMinute(config.MINUTO_EJECUCION || 0)
+          .everyDays(1)
+          .create();
+          
+        Logger.log(`Disparador configurado para ejecutar la sincronización mensualmente el día ${config.DIA_MES || 1} a las ${config.HORA_EJECUCION || 8}:${config.MINUTO_EJECUCION || 0}.`);
+        break;
+        
+      case 'personalizada':
+        // Ejecutar cada X horas
+        trigger.everyHours(config.INTERVALO_HORAS || 1);
+        Logger.log(`Disparador personalizado configurado para ejecutar la sincronización cada ${config.INTERVALO_HORAS || 1} hora(s).`);
+        break;
+        
+      default:
+        // Por defecto, ejecutar cada hora
+        trigger.everyHours(1);
+        Logger.log('Disparador configurado para ejecutar la sincronización cada hora (configuración por defecto).');
+        break;
+    }
+    
+    // Crear el disparador
+    trigger.create();
+    
+    return {
+      exito: true,
+      mensaje: `Disparador configurado correctamente con frecuencia ${config.FRECUENCIA}.`
+    };
+  } catch (error) {
+    Logger.log(`Error al configurar el disparador: ${error.toString()}`);
+    return {
+      exito: false,
+      mensaje: `Error al configurar el disparador: ${error.toString()}`
+    };
   }
+}
+
+/**
+ * Función que verifica si hoy es el día del mes para ejecutar la sincronización mensual.
+ * Se ejecuta diariamente cuando se configura la frecuencia mensual.
+ */
+function mensualCheckTrigger() {
+  try {
+    const hoy = new Date();
+    const diaActual = hoy.getDate();
+    const diaEjecucion = parseInt(PropertiesService.getUserProperties().getProperty('DIA_MES_EJECUCION') || '1');
+    
+    // Verificar si hoy es el día configurado para la ejecución mensual
+    if (diaActual === diaEjecucion) {
+      Logger.log(`Ejecutando sincronización mensual programada para el día ${diaEjecucion} del mes.`);
+      syncAttachments();
+    } else {
+      Logger.log(`Hoy (día ${diaActual}) no es el día programado (${diaEjecucion}) para la sincronización mensual. Omitiendo ejecución.`);
+    }
+  } catch (error) {
+    Logger.log(`Error en verificación de disparador mensual: ${error.toString()}`);
+  }
+}
+
+/**
+ * Obtiene el nombre del día de la semana a partir de su número.
+ * @param {number} numeroDia - Número del día (1-7, donde 1 es lunes)
+ * @return {string} Nombre del día de la semana
+ */
+function obtenerNombreDiaSemana(numeroDia) {
+  const diasSemana = [
+    'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'
+  ];
   
-  // Crear un nuevo disparador para ejecutar cada hora
-  ScriptApp.newTrigger('syncAttachments')
-    .timeBased()
-    .everyHours(1)
-    .create();
-  
-  Logger.log('Disparador configurado para ejecutar la sincronización cada hora.');
+  // Ajustar el índice ya que nuestro array comienza en 0 pero numeroDia comienza en 1
+  const indice = (numeroDia - 1) % 7;
+  return diasSemana[indice];
 }
 
 /**
