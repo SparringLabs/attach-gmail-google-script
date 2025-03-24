@@ -9,8 +9,6 @@
 
 > Una herramienta de [SPARRING.dev](https://sparring.dev) para simplificar tu vida digital.
 
-![Interfaz de SPARRING Attach GMAIL](resources/ui-marzo25.png)
-*Vista de la interfaz de configuración de SPARRING Attach GMAIL - Marzo 2025*
 
 ## ⚠️ Aviso Legal
 
